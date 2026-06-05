@@ -96,9 +96,10 @@ if __name__ == '__main__':
     
     # Load model
     tracknet_ckpt = torch.load(args.tracknet_file)
+    tracknet_model_name = tracknet_ckpt['param_dict'].get('model_name', 'TrackNet')
     tracknet_seq_len = tracknet_ckpt['param_dict']['seq_len']
     bg_mode = tracknet_ckpt['param_dict']['bg_mode']
-    tracknet = get_model('TrackNet', tracknet_seq_len, bg_mode).cuda()
+    tracknet = get_model(tracknet_model_name, tracknet_seq_len, bg_mode).cuda()
     tracknet.load_state_dict(tracknet_ckpt['model'])
 
     if args.inpaintnet_file:

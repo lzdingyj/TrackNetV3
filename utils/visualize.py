@@ -13,7 +13,7 @@ def write_to_tb(model_type, tb_writer, losses, val_res, epoch):
 
         Args:
             model_type (str): Model type
-                Choices:'TrackNet', 'InpaintNet'
+                Choices:'TrackNet', 'TrackNetV3Improved', 'InpaintNet'
             tb_writer (tensorboard.SummaryWriter): Tensorboard writer
             losses (Tuple[float, float]): Training and validation losses
             val_res (dict):Validation results
@@ -23,7 +23,7 @@ def write_to_tb(model_type, tb_writer, losses, val_res, epoch):
             None
     """
 
-    if model_type == 'TrackNet':
+    if model_type in ['TrackNet', 'TrackNetV3Improved', 'TrackNet_V3_Improved']:
         tb_writer.add_scalars(f"{model_type}_Loss/WBCE", {'train': losses[0],
                                                           'val': losses[1]}, epoch)
         tb_writer.add_scalar(f"{model_type}_Metric/Accurcy", val_res['accuracy'], epoch)

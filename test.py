@@ -934,9 +934,10 @@ if __name__ == '__main__':
     print(f'Loading checkpoint...')
     if args.tracknet_file:
         tracknet_ckpt = torch.load(args.tracknet_file)
+        param_dict['tracknet_model_name'] = tracknet_ckpt['param_dict'].get('model_name', 'TrackNet')
         param_dict['tracknet_seq_len'] = tracknet_ckpt['param_dict']['seq_len']
         param_dict['bg_mode'] = tracknet_ckpt['param_dict']['bg_mode']
-        tracknet = get_model('TrackNet', seq_len=param_dict['tracknet_seq_len'], bg_mode=param_dict['bg_mode']).cuda()
+        tracknet = get_model(param_dict['tracknet_model_name'], seq_len=param_dict['tracknet_seq_len'], bg_mode=param_dict['bg_mode']).cuda()
         tracknet.load_state_dict(tracknet_ckpt['model'])
         model = (tracknet, None)
     else:

@@ -9,7 +9,7 @@ import pandas as pd
 
 from collections import deque
 from PIL import Image, ImageDraw
-from model import TrackNet, InpaintNet
+from model import TrackNet, TrackNetV3Improved, InpaintNet
 
 # Global variables
 HEIGHT = 288
@@ -50,6 +50,7 @@ def get_model(model_name, seq_len=None, bg_mode=None):
             model_name (str): type of model to create
                 Choices:
                     - 'TrackNet': Return TrackNet model
+                    - 'TrackNetV3Improved': Return improved TrackNetV3 model
                     - 'InpaintNet': Return InpaintNet model
             seq_len (int, optional): Length of input sequence of TrackNet
             bg_mode (str, optional): Background mode of TrackNet
@@ -63,15 +64,21 @@ def get_model(model_name, seq_len=None, bg_mode=None):
             model (torch.nn.Module): Model with specified configuration
     """
 
-    if model_name == 'TrackNet':
+    if model_name in ['TrackNet', 'TrackNetV3Improved', 'TrackNet_V3_Improved']:
+        model_cls = TrackNet if model_name == 'TrackNet' else TrackNetV3Improved
         if bg_mode == 'subtract':
-            model = TrackNet(in_dim=seq_len, out_dim=seq_len)
+            in_dim = seq_len
         elif bg_mode == 'subtract_concat':
-            model = TrackNet(in_dim=seq_len*4, out_dim=seq_len)
+            in_dim = seq_len * 4
         elif bg_mode == 'concat':
-            model = TrackNet(in_dim=(seq_len+1)*3, out_dim=seq_len)
+            in_dim = (seq_len + 1) * 3
         else:
-            model = TrackNet(in_dim=seq_len*3, out_dim=seq_len)
+            in_dim = seq_len * 3
+
+        if model_cls is TrackNet:
+            model = model_cls(in_dim=in_dim, out_dim=seq_len)
+        else:
+            model = model_cls(in_dim=in_dim, out_dim=seq_len, num_frames=seq_len)
     elif model_name == 'InpaintNet':
         model = InpaintNet()
     else:
